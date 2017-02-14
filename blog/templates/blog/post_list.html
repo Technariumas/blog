@@ -1,0 +1,8 @@
+{% extends "blog/main.html" %}
+{% block head %}
+{% load staticfiles%}
+	<script src="{% static 'blog/infinite_scroll.js' %}"></script>
+{% endblock %}
+{% block post_list %}
+	{% include "blog/post_list_template.html" %}
+{% endblock %}

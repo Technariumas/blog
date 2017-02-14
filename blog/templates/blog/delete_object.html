@@ -1,0 +1,13 @@
+{% extends "blog/main.html" %}
+{% block content %}
+{% if post %}
+Delete {{post.title}} ?
+{% endif %}
+{% if comment %}
+Delete the comment {{ comment.body }}?
+{% endif %}
+<form method='post' action=''>
+		{% csrf_token %}
+		<button type="submit" class="btn">Yes</button>
+</form>
+{% endblock %}
