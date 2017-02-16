@@ -42,22 +42,25 @@ def edit_post(request, pk):
 	if request.method == 'POST':
 		form = PostForm(request.POST, instance=post) #overwrite the db entry for the Post instance
 		if form.is_valid():
-			# tags are processed separately, the field for the post instance is cleared and the tags are added to it.
+			# tags are processed separately, the field for the post instance is cleared and the new tags are added to it.
 			post.tags.all().delete()
-			tag_list = form.cleaned_data['tags'].split('#')
+			print(form.cleaned_data)
+			tag_list = form.cleaned_data['tags'].split(',')
 			tag_list = [tag.rstrip() for tag in tag_list if tag != ' ' and tag != ''] # clean 
-			tag_list = map(lambda tag: re.sub(r' ', r'-', tag.lower()), tag_list) #clean
+			#tag_list = map(lambda tag: re.sub(r' ', r'-', tag.lower()), tag_list) #clean
 			for tag in tag_list:
 				tag, created=Tag.objects.get_or_create(name=slugify(tag)) 
 				post.tags.add(tag)
 			form.save()
 			return HttpResponseRedirect(reverse('single_post_view', kwargs={'pk':pk}))
+		else:
+			return render(request, 'blog/edit_post.html', {'form':form})
 
 	else:
-		# unbound form - send all the tags to be prefilled as a str to the tags field in the form - '#tag #tag2'
+		# unbound form - send all the tags to be prefilled as a str to the tags field in the form - 'tag, tag2,'
 		tags=str(post.tags.all())
 		tags=re.findall(r'[-_\w+]+', tags)
-		tags=['#'+tag for tag in tags if tag != 'Tag']
+		tags=[tag+',' for tag in tags if tag != 'Tag']
 		tags = ' '.join(tags)
 		form=PostForm(initial={'body':post.body.encode('UTF-8'), 
 								'title':post.title,
@@ -98,9 +101,9 @@ def add_post(request):
 	if request.method == 'POST':
 		form = PostForm(request.POST)
 		if form.is_valid():
-			tag_list = form.cleaned_data['tags'].split('#')
+			tag_list = form.cleaned_data['tags'].split(',')
 			tag_list = [tag.rstrip() for tag in tag_list if tag != ' ' and tag != ''] # clean 
-			tag_list = map(lambda tag: re.sub(r' ', r'-', tag.lower()), tag_list)
+			#tag_list = map(lambda tag: re.sub(r' ', r'-', tag.lower()), tag_list)
 
 			obj = form.save()
 			obj.slug=slugify(request.POST['title'])
@@ -108,6 +111,8 @@ def add_post(request):
 				tag, created=Tag.objects.get_or_create(name=slugify(tag))
 				obj.tags.add(tag)
 			return HttpResponseRedirect(reverse('single_post_view', kwargs={'pk':obj.pk}))
+		else:
+			return render(request, 'blog/edit_post.html', {'form':form})
 	else:
 		form = PostForm(initial={'timestamp':int(time.time()),
 								'date_time': time.strftime('%Y-%m-%d %H:%M:%S',time.localtime())})

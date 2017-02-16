@@ -25,8 +25,14 @@ class Post(models.Model):
 	timestamp = models.IntegerField()
 	tags = models.ManyToManyField(Tag)
 
+	def save(self, *args, **kwargs):
+		if not self.id:
+			self.slug = slugify(self.title)
+		super(Post, self).save(*args, **kwargs)
+
 	class Meta:
 		ordering = ['-date_time']
+
 	def __str__(self):
 		return self.slug
 

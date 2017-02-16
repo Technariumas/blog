@@ -29,9 +29,7 @@ urlpatterns = [
     url(r'^delete_post/(?P<pk>[\d+]+)/$', views.delete_post, name='delete_post'),
     url(r'^delete_comment/(?P<pk>[\d+]+)/$', views.delete_comment, name='delete_comment'),
     url(r'^comment/(?P<pk>[\w+\d+]+)/$', views.add_comment, name='add_comment'),
-    url(r'^post/(?P<pk>[\w\d]+)/$', views.single_post_view, name='single_post_view'),
-    url(r'^post/(?P<pk>[\w\d]+)/(?P<slug>[\w\d-]+)?/$', views.single_post_view, name='single_post_view'),
+    url(r'^post/(?P<pk>[\w\d]+)/(?P<slug>[\w\d-]+)?$', views.single_post_view, name='single_post_view'),
     url(r'^login/$', views.user_login, name='login'),
     url(r'^logout/$', views.user_logout, name='logout'),
-
 ]
