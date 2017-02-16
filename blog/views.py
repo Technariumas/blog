@@ -25,19 +25,19 @@ def single_post_view(request, pk, slug=None):
 	context_dict={'post':post}
 	return render(request, 'blog/single_post_view.html', context_dict)
 
-def tagged_post_list(request, tag_pk, page_num=1):
+def tagged_post_list(request, tag_name, page_num=1):
 	page_num=int(page_num)
-	tag = Tag.objects.get(pk=tag_pk)
+	tag = Tag.objects.get(name=tag_name)
 	tagged_post_list = tag.post_set.all().order_by('-date_time')[page_num*10-10:page_num*10] # query next 10 tagged posts
 	tag_list = Tag.objects.all()
-	context_dict = {'post_list':tagged_post_list, 'page_num': page_num, 'current_tag':tag_pk}
+	context_dict = {'post_list':tagged_post_list, 'page_num': page_num, 'current_tag':tag_name}
 	if page_num == 1: #render full page if we're on the first page
 		return render(request, 'blog/post_list.html', context_dict)
 	else: # else render only the post_list without header, etc
 		return render(request, 'blog/post_list_template.html', context_dict) 
 
 @login_required(login_url="/login/")
-def edit_post(request, pk):
+def edit_post(request, pk,slug=None):
 	post = Post.objects.get(pk=pk)
 	if request.method == 'POST':
 		form = PostForm(request.POST, instance=post) #overwrite the db entry for the Post instance
@@ -52,7 +52,7 @@ def edit_post(request, pk):
 				tag, created=Tag.objects.get_or_create(name=slugify(tag)) 
 				post.tags.add(tag)
 			form.save()
-			return HttpResponseRedirect(reverse('single_post_view', kwargs={'pk':pk}))
+			return HttpResponseRedirect(reverse('single_post_view', kwargs={'pk':pk, 'slug':slug}))
 		else:
 			return render(request, 'blog/edit_post.html', {'form':form})
 
@@ -72,7 +72,7 @@ def edit_post(request, pk):
 		return render(request, 'blog/edit_post.html', {'form':form})
 
 @login_required(login_url="/login/")
-def delete_post(request, pk):
+def delete_post(request, pk,slug=None):
 	post=get_object_or_404(Post, pk=pk)
 	if request.method == "POST":
 		form = DeletePost(request.POST, instance=post)
@@ -103,14 +103,13 @@ def add_post(request):
 		if form.is_valid():
 			tag_list = form.cleaned_data['tags'].split(',')
 			tag_list = [tag.rstrip() for tag in tag_list if tag != ' ' and tag != ''] # clean 
-			#tag_list = map(lambda tag: re.sub(r' ', r'-', tag.lower()), tag_list)
 
 			obj = form.save()
 			obj.slug=slugify(request.POST['title'])
 			for tag in tag_list:
 				tag, created=Tag.objects.get_or_create(name=slugify(tag))
 				obj.tags.add(tag)
-			return HttpResponseRedirect(reverse('single_post_view', kwargs={'pk':obj.pk}))
+			return HttpResponseRedirect(reverse('single_post_view', kwargs={'pk':obj.pk, 'slug':obj.slug}))
 		else:
 			return render(request, 'blog/edit_post.html', {'form':form})
 	else:
@@ -118,7 +117,7 @@ def add_post(request):
 								'date_time': time.strftime('%Y-%m-%d %H:%M:%S',time.localtime())})
 	return render(request, 'blog/add_post.html', {'form':form})
 
-def add_comment(request, pk):
+def add_comment(request, pk, slug=None):
 	post = Post.objects.get(pk=pk)
 	if request.method == 'POST':
 		form = CommentForm(request.POST)
