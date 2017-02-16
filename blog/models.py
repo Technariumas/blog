@@ -12,7 +12,7 @@ class Comment(models.Model):
 	posted_by = models.CharField(max_length=128, null=True)
 	body = models.TextField()
 	date_time = models.DateTimeField()
-	post = models.ForeignKey('Post', default='')
+	post = models.ForeignKey('Post')
 
 	def __str__(self):
 		return self.body
@@ -24,6 +24,7 @@ class Post(models.Model):
 	date_time = models.DateTimeField()
 	timestamp = models.IntegerField()
 	tags = models.ManyToManyField(Tag)
+	created_by = models.ForeignKey('UserProfile', null=True)
 
 	def save(self, *args, **kwargs):
 		if not self.id:

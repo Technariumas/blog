@@ -13,26 +13,13 @@ class PostForm(forms.ModelForm):
 	def clean(self):
 		cleaned_data = self.cleaned_data
 		tags = cleaned_data.get('tags')
-		if re.search(r"[^-\w$-_.+!*'(), ]",tags):
-			self.add_error('tags', 'Invalid character(s) in tags')
+		if re.search(r"[^-\w, ]",tags):
+			self.add_error('tags', 'Invalid character(s) in tags, only alphanumeric chars and - allowed')
 		return cleaned_data
 
 	class Meta:
 		model = Post
 		fields = ['title', 'body','date_time','timestamp']
-
-
-
-	
-'''
-	def clean_tags(self):
-		data=self.cleaned_data['tags']
-		if re.search(r'[^-\w# ]',data):
-			self.add_error('tags', 'Invalid character(s) in tags')
-		return data
-'''
-
-
 
 
 class CommentForm(forms.ModelForm):

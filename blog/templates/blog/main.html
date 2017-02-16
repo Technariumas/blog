@@ -11,7 +11,7 @@
 <body>
 	<div id='login_panel'>
 	{% if user.is_authenticated %}
-		<a class='btn' id='logout_btn' href="{% url 'logout' %}">Logout</a>
+		Logged in as {{user.username}}<a class='btn' id='logout_btn' href="{% url 'logout' %}">Logout</a>
 		<a class='btn' id='add_post_btn'href="{% url 'add_post' %}">Add a new Post </a>
 	{% else %}
 		<a class='btn' id='login_btn' href="{% url 'login' %}">Login</a>

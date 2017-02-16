@@ -3,10 +3,10 @@ import time
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.urlresolvers import reverse
 from django.template.defaultfilters import slugify
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required
-from blog.models import Post, Tag, Comment
+from django.contrib.auth.decorators import login_required, user_passes_test
+from blog.models import Post, Tag, Comment, UserProfile
 from blog.forms import PostForm, CommentForm, DeletePost
 
 def post_list(request, page_num=1):
@@ -39,6 +39,12 @@ def tagged_post_list(request, tag_name, page_num=1):
 @login_required(login_url="/login/")
 def edit_post(request, pk,slug=None):
 	post = Post.objects.get(pk=pk)
+	user = UserProfile.objects.get(user=request.user)
+
+	if not request.user.is_superuser: # if not admin and not post creator return 403
+		if user != post.created_by:
+			return HttpResponseForbidden()
+
 	if request.method == 'POST':
 		form = PostForm(request.POST, instance=post) #overwrite the db entry for the Post instance
 		if form.is_valid():
@@ -73,7 +79,13 @@ def edit_post(request, pk,slug=None):
 
 @login_required(login_url="/login/")
 def delete_post(request, pk,slug=None):
+	
 	post=get_object_or_404(Post, pk=pk)
+	user = UserProfile.objects.get(user=request.user)
+	if not request.user.is_superuser: # if not admin and not post creator return 403
+		if user != post.created_by:
+			return HttpResponseForbidden()
+
 	if request.method == "POST":
 		form = DeletePost(request.POST, instance=post)
 		if form.is_valid():
@@ -83,8 +95,11 @@ def delete_post(request, pk,slug=None):
 		form = DeletePost(instance=post)
 		return render(request,'blog/delete_object.html', {'form':form, 'post':post})
 
-@login_required(login_url="/login/")
+@user_passes_test(lambda u: u.is_superuser)
 def delete_comment(request, pk):
+	if not request.user.is_superuser: #only admin can delete comments for now
+		return HttpResponseForbidden()
+
 	comment=get_object_or_404(Comment, pk=pk)
 	if request.method == "POST":
 		form = DeletePost(request.POST, instance=comment)
@@ -100,21 +115,25 @@ def add_post(request):
 	
 	if request.method == 'POST':
 		form = PostForm(request.POST)
+		user = UserProfile.objects.get(user=request.user)
 		if form.is_valid():
 			tag_list = form.cleaned_data['tags'].split(',')
 			tag_list = [tag.rstrip() for tag in tag_list if tag != ' ' and tag != ''] # clean 
 
 			obj = form.save()
 			obj.slug=slugify(request.POST['title'])
+			obj.created_by = user
 			for tag in tag_list:
 				tag, created=Tag.objects.get_or_create(name=slugify(tag))
 				obj.tags.add(tag)
+			obj.save()
 			return HttpResponseRedirect(reverse('single_post_view', kwargs={'pk':obj.pk, 'slug':obj.slug}))
 		else:
 			return render(request, 'blog/edit_post.html', {'form':form})
 	else:
 		form = PostForm(initial={'timestamp':int(time.time()),
 								'date_time': time.strftime('%Y-%m-%d %H:%M:%S',time.localtime())})
+
 	return render(request, 'blog/add_post.html', {'form':form})
 
 def add_comment(request, pk, slug=None):

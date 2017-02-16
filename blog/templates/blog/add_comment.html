@@ -19,7 +19,7 @@
 			<div class='comment'>
 				<div id='comment_header'>Posted at: {{ comment.date_time }} by {{ comment.posted_by }}</br></div>
 				{{ comment.body }}
-				{% if user.is_authenticated %}
+				{% if user.is_superuser %}
 				<a id='delete_comment_btn' href="{% url 'delete_comment' comment.pk %}">Delete Comment</a>
 				{% endif %}
 			</div>
