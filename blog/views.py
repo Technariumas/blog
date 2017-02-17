@@ -50,7 +50,6 @@ def edit_post(request, pk,slug=None):
 		if form.is_valid():
 			# tags are processed separately, the field for the post instance is cleared and the new tags are added to it.
 			post.tags.all().delete()
-			print(form.cleaned_data)
 			tag_list = form.cleaned_data['tags'].split(',')
 			tag_list = [tag.rstrip() for tag in tag_list if tag != ' ' and tag != ''] # clean 
 			#tag_list = map(lambda tag: re.sub(r' ', r'-', tag.lower()), tag_list) #clean
@@ -156,6 +155,7 @@ def user_login(request):
 
 		username = request.POST.get('username')
 		password = request.POST.get('password')
+		print(password)
 		user = authenticate(username=username, password=password)
 
 		if user:
