@@ -155,7 +155,6 @@ def user_login(request):
 
 		username = request.POST.get('username')
 		password = request.POST.get('password')
-		print(password)
 		user = authenticate(username=username, password=password)
 
 		if user:
