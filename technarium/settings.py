@@ -27,6 +27,12 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+DEFAULT_CHARSET ='utf-8'
+
+AUTHENTICATION_BACKENDS = [
+'blog.ldap.LdapLogin',
+'django.contrib.auth.backends.ModelBackend'
+]
 
 
 # Application definition

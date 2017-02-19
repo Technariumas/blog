@@ -9,7 +9,7 @@ from django.template.defaultfilters import slugify
 from datetime import datetime
 
 POST_COUNT=400 # how many posts to get.
-API_KEY = #put tumblr api key here
+API_KEY = '' #put tumblr api key here
 
 def main():
 

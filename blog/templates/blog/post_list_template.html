@@ -7,7 +7,7 @@
 		<div class='post_body'><p>{{ post.body|safe }}</p></div>
 		<div class='post_date'>Posted on {{post.date_time}}
 		{% if post.created_by %}
-		by {{ post.created_by }}
+		by <a href="{% url 'view_posts_by_author' username=post.created_by %}">{{ post.created_by }}</a>
 		{% endif %}
 		</div>
 		<div class='tags'>Tagged</br>

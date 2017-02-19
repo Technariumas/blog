@@ -25,7 +25,7 @@ $(document).ready(function() {
                 }
             });
 		}
-		else{			
+		else if(URI[1] === 'tagged'){			
 				var request_url = '/tagged/'+URI[2]+'/page/'+page_num;
 				$.ajax({
                 url: request_url,
@@ -41,7 +41,24 @@ $(document).ready(function() {
 
                 }
             });
-		}
+		  }
+          else{
+                var request_url = '/author/'+URI[2]+'/page/'+page_num;
+                $.ajax({
+                url: request_url,
+                dataType: 'html',
+                success: function(html) {
+                    if (html === ''){
+                        $('#post_list').append('End of posts');
+                    }
+                    else{
+                        $('#post_list').append(html);
+                        current_page+=1;
+                    }
+
+                }
+            });
+          }
 	}}
 })
 })

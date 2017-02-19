@@ -5,6 +5,7 @@ from django.core.urlresolvers import reverse
 from django.template.defaultfilters import slugify
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required, user_passes_test
 from blog.models import Post, Tag, Comment, UserProfile
 from blog.forms import PostForm, CommentForm, DeletePost
@@ -29,12 +30,22 @@ def tagged_post_list(request, tag_name, page_num=1):
 	page_num=int(page_num)
 	tag = Tag.objects.get(name=tag_name)
 	tagged_post_list = tag.post_set.all().order_by('-date_time')[page_num*10-10:page_num*10] # query next 10 tagged posts
-	tag_list = Tag.objects.all()
 	context_dict = {'post_list':tagged_post_list, 'page_num': page_num, 'current_tag':tag_name}
 	if page_num == 1: #render full page if we're on the first page
 		return render(request, 'blog/post_list.html', context_dict)
 	else: # else render only the post_list without header, etc
-		return render(request, 'blog/post_list_template.html', context_dict) 
+		return render(request, 'blog/post_list_template.html', context_dict)
+
+def posts_by_author(request, username, page_num=1):
+	page_num = int(page_num)
+	user = User.objects.get(username = username)
+	user = UserProfile.objects.get(user = user)
+	post_list = user.post_set.all().order_by('-date_time')[page_num*10-10:page_num*10] # query next 10 tagged posts
+	context_dict = {'post_list': post_list, 'page_num':page_num}
+	if page_num == 1: #render full page if we're on the first page
+		return render(request, 'blog/post_list.html', context_dict)
+	else: # else render only the post_list without header, etc
+		return render(request, 'blog/post_list_template.html', context_dict)
 
 @login_required(login_url="/login/")
 def edit_post(request, pk,slug=None):
@@ -114,7 +125,8 @@ def add_post(request):
 	
 	if request.method == 'POST':
 		form = PostForm(request.POST)
-		user = UserProfile.objects.get(user=request.user)
+		user = User.objects.get(username=request.user)
+		user = UserProfile.objects.get(user=user)
 		if form.is_valid():
 			tag_list = form.cleaned_data['tags'].split(',')
 			tag_list = [tag.rstrip() for tag in tag_list if tag != ' ' and tag != ''] # clean 
