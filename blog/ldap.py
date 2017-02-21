@@ -13,9 +13,12 @@ def connect(username, password):
 	server = Server('ldaps://ldap.technarium.lt')
 	dn = 'uid=blog,ou=Services,dc=technarium,dc=lt'
 	pw = '' # secret here
-	conn = Connection(server,dn,pw,auto_bind=True)
-	conn.search('ou=Members,dc=technarium,dc=lt','(uid='+username+')',attributes='cn')
-		
+	try:
+		conn = Connection(server,dn,pw,auto_bind=True)
+		conn.search('ou=Members,dc=technarium,dc=lt','(uid='+username+')',attributes='cn')
+	except:
+		# service bind failed.
+		return False	
 	if not conn.entries: 
 		# username not found
 		return False
