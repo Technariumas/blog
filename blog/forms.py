@@ -7,14 +7,15 @@ class PostForm(forms.ModelForm):
 	title = forms.CharField()
 	body = forms.CharField(widget=forms.Textarea)
 	date_time = forms.DateTimeField(input_formats=['%Y-%m-%d %H:%M:%S'], widget=forms.HiddenInput)
-	tags = forms.CharField(min_length=1,)
+	tags = forms.CharField(min_length=1,required=False)
 	timestamp = forms.IntegerField(widget=forms.HiddenInput)
 
 	def clean(self):
 		cleaned_data = self.cleaned_data
 		tags = cleaned_data.get('tags')
-		if re.search(r"[^-\w, ]",tags):
-			self.add_error('tags', 'Invalid character(s) in tags, only alphanumeric chars and - allowed')
+		if tags:
+			if re.search(r"[^-\w, ]",tags):
+				self.add_error('tags', 'Invalid character(s) in tags, only alphanumeric chars and - allowed')
 		return cleaned_data
 
 	class Meta:

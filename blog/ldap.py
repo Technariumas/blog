@@ -18,7 +18,7 @@ def connect(username, password):
 		conn.search('ou=Members,dc=technarium,dc=lt','(uid='+username+')',attributes='cn')
 	except:
 		# service bind failed.
-		return False	
+		return False
 	if not conn.entries: 
 		# username not found
 		return False
