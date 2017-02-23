@@ -76,7 +76,7 @@ def edit_post(request, pk,slug=None):
 		# unbound form - send all the tags to be prefilled as a str to the tags field in the form - 'tag, tag2,'
 		tags=str(post.tags.all())
 		tags=re.findall(r'[-_\w+]+', tags)
-		tags=[tag+',' for tag in tags if tag != 'Tag']
+		tags=[tag+',' for tag in tags if tag != 'Tag'] # can't remember why !='Tag'
 		tags = ' '.join(tags)
 		form=PostForm(initial={'body':post.body.encode('UTF-8'), 
 								'title':post.title,
@@ -125,8 +125,8 @@ def add_post(request):
 	
 	if request.method == 'POST':
 		form = PostForm(request.POST)
-		user = User.objects.get(username=request.user)
-		user = UserProfile.objects.get(user=user)
+		#user = User.objects.get(username=request.user)
+		user = UserProfile.objects.get(user=request.user)
 		if form.is_valid():
 			tag_list = form.cleaned_data['tags'].split(',')
 			tag_list = [tag.rstrip() for tag in tag_list if tag != ' ' and tag != ''] # clean 
