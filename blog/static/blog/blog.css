@@ -1,9 +1,24 @@
 #post_list{
-	position: absolute;
-	margin-left: 400px;
+	margin-left: 300px;
 }
 
-.description {
+#blog_logo:hover {
+    opacity: 0.7;
+}
+
+#blog_logo {
+    max-width: 200px;
+    padding-bottom: 0px;
+    transition: all 0.3s ease-in-out 0s;
+}
+
+.header{
+	z-index: 1;
+	margin-left:10px;
+	width: 200px;
+}
+
+#description {
     text-align: right;
     font-size: 12px;
 }
@@ -34,11 +49,6 @@ h1 a, h2 a, h3 a, h4 a {
     transition: all 0.1s ease-in-out 0s;
 }
 
-.header{
-	position:fixed;
-	z-index: 1;
-	margin-left:10px;
-}
 
 .tag_button:before{
 	content:'#';
