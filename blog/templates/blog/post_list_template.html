@@ -5,7 +5,7 @@
 		<a href="{% url 'single_post_view' slug=post.slug pk=post.pk %}">{{post.title}}</a>
 		</h1>
 		<div class='post_body'><p>{{ post.body|safe }}</p></div>
-		<div class='post_date'>Posted on {{post.date_time}}
+		<div class='post_date'>Posted on <a class="posted_date" href="{% url 'single_post_view' slug=post.slug pk=post.pk %}">{{post.date_time}}</a>
 		{% if post.created_by %}
 		by <a href="{% url 'view_posts_by_author' username=post.created_by %}">{{ post.created_by }}</a>
 		{% endif %}
