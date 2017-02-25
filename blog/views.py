@@ -1,5 +1,6 @@
 import re
 import time
+from django.conf import settings
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.urlresolvers import reverse
 from django.template.defaultfilters import slugify
@@ -9,6 +10,18 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required, user_passes_test
 from blog.models import Post, Tag, Comment, UserProfile
 from blog.forms import PostForm, CommentForm, DeletePost
+from blog.utils import write_file, delete_images
+from django.views.decorators.csrf import csrf_exempt
+
+
+@login_required
+@csrf_exempt
+def upload_handler(request):
+	if request.method == 'POST':
+		filename = str(request.FILES['file'])
+		write_file(filename, request.FILES['file'])
+		return HttpResponse('{ "location" :'+ '"/media/usr/'+filename+'"}')
+	
 
 def post_list(request, page_num=1):
 	page_num=int(page_num)
@@ -51,6 +64,7 @@ def posts_by_author(request, username, page_num=1):
 def edit_post(request, pk,slug=None):
 	post = Post.objects.get(pk=pk)
 	user = UserProfile.objects.get(user=request.user)
+	old_html = post.body
 
 	if not request.user.is_superuser: # if not admin and not post creator return 403
 		if user != post.created_by:
@@ -60,6 +74,11 @@ def edit_post(request, pk,slug=None):
 		form = PostForm(request.POST, instance=post) #overwrite the db entry for the Post instance
 		if form.is_valid():
 			# tags are processed separately, the field for the post instance is cleared and the new tags are added to it.
+
+			new_html = form.cleaned_data['body']
+
+			delete_images(old_html, new_html) #delete unused images
+
 			post.tags.all().delete()
 			tag_list = form.cleaned_data['tags'].split(',')
 			tag_list = [tag.rstrip() for tag in tag_list if tag != ' ' and tag != ''] # clean 
@@ -67,6 +86,7 @@ def edit_post(request, pk,slug=None):
 			for tag in tag_list:
 				tag, created=Tag.objects.get_or_create(name=slugify(tag)) 
 				post.tags.add(tag)
+						
 			form.save()
 			return HttpResponseRedirect(reverse('single_post_view', kwargs={'pk':pk, 'slug':slug}))
 		else:
@@ -91,12 +111,15 @@ def edit_post(request, pk,slug=None):
 def delete_post(request, pk,slug=None):
 	
 	post=get_object_or_404(Post, pk=pk)
+	
+
 	user = UserProfile.objects.get(user=request.user)
 	if not request.user.is_superuser: # if not admin and not post creator return 403
 		if user != post.created_by:
 			return HttpResponseForbidden()
 
 	if request.method == "POST":
+		delete_images(post.body, delete=True)
 		form = DeletePost(request.POST, instance=post)
 		if form.is_valid():
 			post.delete()
@@ -156,8 +179,6 @@ def add_comment(request, pk, slug=None):
 			obj.post_id=pk
 			form.save()
 			return HttpResponseRedirect(reverse('single_post_view', kwargs={'pk':pk}))
-		else:
-			print('inv`')
 	else:
 		form = CommentForm(initial={'date_time': time.strftime('%Y-%m-%d %H:%M:%S',time.localtime())})
 	return render(request, 'blog/add_comment.html', {'form':form, 'post':post})

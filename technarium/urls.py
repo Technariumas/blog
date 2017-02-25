@@ -23,7 +23,7 @@ urlpatterns = [
     url(r'^$', views.post_list),
     url(r'^page/(?P<page_num>[\w\d+]+)/$', views.post_list, name='page'),
     url(r'^admin/', admin.site.urls),
-    url(r'^tagged/(?P<tag_name>[-\w\d]+)/$', views.tagged_post_list,name='view_tagged_posts'),
+    url(r'^tagged/(?P<tag_name>[-\w\d]+)/$', views.tagged_post_list, name='view_tagged_posts'),
     url(r'^tagged/(?P<tag_name>[-\w\d]+)/page/(?P<page_num>[\w\d]+)/$', views.tagged_post_list, name='view_tagged_posts'),
     url(r'^author/(?P<username>[-\w\d]+)/page/(?P<page_num>[\w\d]+)/$', views.posts_by_author, name='view_posts_by_author'),
     url(r'^author/(?P<username>[-\w\d]+)/$', views.posts_by_author, name='view_posts_by_author'),
@@ -35,5 +35,5 @@ urlpatterns = [
     url(r'^post/(?P<pk>[\w\d]+)/(?P<slug>[\w\d-]+)?$', views.single_post_view, name='single_post_view'),
     url(r'^login/$', views.user_login, name='login'),
     url(r'^logout/$', views.user_logout, name='logout'),
-
+    url(r'^upload/$', views.upload_handler,),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
