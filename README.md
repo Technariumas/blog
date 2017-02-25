@@ -29,5 +29,5 @@ default django admin interface is on 127.0.0.1:8000/admin , allows to add, remov
 * ~~User groups? at the moment anyone with an account has access to delete, create or edit anything.~~
 * ~~URL inconsistencies.~~
 * Integrate with technarium.lt static pages.
-* Image upload and hosting
+* ~~Image upload and hosting~~
 * ?
