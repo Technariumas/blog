@@ -10,7 +10,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required, user_passes_test
 from blog.models import Post, Tag, Comment, UserProfile
 from blog.forms import PostForm, CommentForm, DeletePost
-from blog.utils import write_file, delete_images
+from blog.utils import write_file
 from django.views.decorators.csrf import csrf_exempt
 
 
@@ -64,7 +64,7 @@ def posts_by_author(request, username, page_num=1):
 def edit_post(request, pk,slug=None):
 	post = Post.objects.get(pk=pk)
 	user = UserProfile.objects.get(user=request.user)
-	old_html = post.body
+
 
 	if not request.user.is_superuser: # if not admin and not post creator return 403
 		if user != post.created_by:
@@ -74,10 +74,6 @@ def edit_post(request, pk,slug=None):
 		form = PostForm(request.POST, instance=post) #overwrite the db entry for the Post instance
 		if form.is_valid():
 			# tags are processed separately, the field for the post instance is cleared and the new tags are added to it.
-
-			new_html = form.cleaned_data['body']
-
-			delete_images(old_html, new_html) #delete unused images
 
 			post.tags.all().delete()
 			tag_list = form.cleaned_data['tags'].split(',')
@@ -119,7 +115,6 @@ def delete_post(request, pk,slug=None):
 			return HttpResponseForbidden()
 
 	if request.method == "POST":
-		delete_images(post.body, delete=True)
 		form = DeletePost(request.POST, instance=post)
 		if form.is_valid():
 			post.delete()
@@ -148,7 +143,6 @@ def add_post(request):
 	
 	if request.method == 'POST':
 		form = PostForm(request.POST)
-		#user = User.objects.get(username=request.user)
 		user = UserProfile.objects.get(user=request.user)
 		if form.is_valid():
 			tag_list = form.cleaned_data['tags'].split(',')
@@ -163,7 +157,7 @@ def add_post(request):
 			obj.save()
 			return HttpResponseRedirect(reverse('single_post_view', kwargs={'pk':obj.pk, 'slug':obj.slug}))
 		else:
-			return render(request, 'blog/edit_post.html', {'form':form})
+			return render(request, 'blog/add_post.html', {'form':form})
 	else:
 		form = PostForm(initial={'timestamp':int(time.time()),
 								'date_time': time.strftime('%Y-%m-%d %H:%M:%S',time.localtime())})
