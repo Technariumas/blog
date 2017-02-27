@@ -35,5 +35,7 @@ urlpatterns = [
     url(r'^post/(?P<pk>[\w\d]+)/(?P<slug>[\w\d-]+)?$', views.single_post_view, name='single_post_view'),
     url(r'^login/$', views.user_login, name='login'),
     url(r'^logout/$', views.user_logout, name='logout'),
-    url(r'^upload/$', views.upload_handler,),
+    url(r'^upload/$', views.upload_handler),
+    url(r'^search/$', views.search, name='search'),
+    url(r'^search/(?P<query_string>[\w\d]+)/page/(?P<page_num>[\w\d]+)/$', views.search, name='search'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -23,7 +23,7 @@ class Post(models.Model):
 	slug = models.SlugField()
 	date_time = models.DateTimeField()
 	timestamp = models.IntegerField()
-	tags = models.ManyToManyField(Tag,null=True,blank=True)
+	tags = models.ManyToManyField(Tag,blank=True)
 	created_by = models.ForeignKey('UserProfile', null=True)
 
 	def save(self, *args, **kwargs):

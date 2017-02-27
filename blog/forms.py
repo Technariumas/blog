@@ -41,3 +41,6 @@ class DeleteComment(forms.ModelForm):
 	class Meta:
 		model = Comment
 		fields = []
+
+class SearchForm(forms.Form):
+	search= forms.CharField(label="Search...", max_length=256)

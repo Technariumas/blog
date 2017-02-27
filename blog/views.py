@@ -2,16 +2,18 @@ import re
 import time
 from django.conf import settings
 from django.shortcuts import render, redirect, get_object_or_404
+from django.views.decorators.csrf import csrf_exempt
 from django.core.urlresolvers import reverse
 from django.template.defaultfilters import slugify
+from django.template import RequestContext
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required, user_passes_test
 from blog.models import Post, Tag, Comment, UserProfile
 from blog.forms import PostForm, CommentForm, DeletePost
-from blog.utils import write_file
-from django.views.decorators.csrf import csrf_exempt
+from blog.utils import write_file, get_query
+
 
 
 @login_required
@@ -21,7 +23,26 @@ def upload_handler(request):
 		filename = str(request.FILES['file'])
 		write_file(filename, request.FILES['file'])
 		return HttpResponse('{ "location" :'+ '"/media/usr/'+filename+'"}')
-	
+
+def search(request, query_string=None, page_num=1):
+	page_num=int(page_num)
+	if query_string == None:
+		if ('q' in request.GET) and request.GET['q'].strip():
+			query_string = request.GET['q']  			
+			entry_query = get_query(query_string, ['title', 'body'])     
+			found_entries = Post.objects.filter(entry_query).order_by('-date_time')[page_num*10-10:page_num*10]
+			context_dict = {'query_string': query_string, 'post_list': found_entries }
+	else:
+		#query_string = re.findall(r'\?q=(.+)', query_string)[0]
+		entry_query = get_query(query_string, ['title', 'body'])     
+		found_entries = Post.objects.filter(entry_query).order_by('-date_time')[page_num*10-10:page_num*10]
+		context_dict = {'query_string': query_string, 'post_list': found_entries }
+
+
+	if page_num == 1: #render full page if we're on the first pageq
+		return render(request, 'blog/post_list.html', context_dict)
+	else: # else render only the post_list without header, etc
+		return render(request, 'blog/post_list_template.html', context_dict) 
 
 def post_list(request, page_num=1):
 	page_num=int(page_num)
