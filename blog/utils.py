@@ -25,7 +25,6 @@ def normalize_query(query_string,
 
 def get_query(query_string, search_fields):
 	'''copypasta from http://julienphalip.com/post/2825034077/adding-search-to-a-django-site-in-a-snap'''
-
 	query = None # Query to search for every search term        
 	terms = normalize_query(query_string)
 	for term in terms:
@@ -41,5 +40,3 @@ def get_query(query_string, search_fields):
 		else:
 			query = query & or_query
 	return query
-
-

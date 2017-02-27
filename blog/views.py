@@ -1,5 +1,6 @@
 import re
 import time
+import urllib.parse
 from django.conf import settings
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
@@ -34,6 +35,7 @@ def search(request, query_string=None, page_num=1):
 			context_dict = {'query_string': query_string, 'post_list': found_entries }
 	else:
 		#query_string = re.findall(r'\?q=(.+)', query_string)[0]
+		query_string = urllib.parse.unquote_plus(query_string)
 		entry_query = get_query(query_string, ['title', 'body'])     
 		found_entries = Post.objects.filter(entry_query).order_by('-date_time')[page_num*10-10:page_num*10]
 		context_dict = {'query_string': query_string, 'post_list': found_entries }

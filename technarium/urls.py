@@ -37,5 +37,5 @@ urlpatterns = [
     url(r'^logout/$', views.user_logout, name='logout'),
     url(r'^upload/$', views.upload_handler),
     url(r'^search/$', views.search, name='search'),
-    url(r'^search/(?P<query_string>[\w\d]+)/page/(?P<page_num>[\w\d]+)/$', views.search, name='search'),
+    url(r'^search/(?P<query_string>[\w\d\W]+)/page/(?P<page_num>[\w\d]+)/$', views.search, name='search'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
