@@ -9,7 +9,6 @@ def connect(username, password):
 	return True if username or password combination 
 	is correct and user belongs to group "Members"'''
 
-
 	server = Server('ldaps://ldap.technarium.lt')
 	dn = 'uid=blog,ou=Services,dc=technarium,dc=lt'
 	pw = '' # secret here
@@ -22,23 +21,20 @@ def connect(username, password):
 	if not conn.entries: 
 		# username not found
 		return False
-
 	else:
 		udn = 'cn='+str(conn.entries[0].cn)+',ou=Members,dc=technarium,dc=lt' # create the user's dn 
-		conn.search('ou=Groups,dc=technarium,dc=lt','(cn=members)', attributes='uniqueMember') # search for the Members group
-		member_list = conn.entries[0].uniqueMember # get a list of users in group Members
-		udn = udn.encode('utf-8').decode('unicode_escape') # urgh
-		if udn not in member_list:
+		udn = udn.encode('utf-8').decode('unicode_escape')
+		conn.search('cn=members,ou=Groups,dc=technarium,dc=lt','(uniquemember='+udn+')', attributes='cn') # search for the Members group
+		if not conn.entries:
 			#user is not in "Members" group 
 			return False
 		try:
-			new_conn=Connection(server,udn,password,auto_bind=True)
+			Connection(server,udn,password,auto_bind=True)
 			# success
 			return True
 		except:
 			#  LDAPBindError - password is incorrect, or if something else happens.
 			return False
-
 
 
 class LdapLogin:
