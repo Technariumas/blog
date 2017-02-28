@@ -9,15 +9,13 @@ $(document).ready(function() {
 		if ($(document).height() - win.scrollTop() <= win.height()+400) {
 		page_num+=1
 		var URI = window.location.pathname.split( '/' )
-        console.log(URI)
-        console.log(window.location.search)
 		if(URI[1] === 'page' || URI[1] === ''){
 		$.ajax({
-                url: '/page/'+page_num,
+                url: '/page/'+page_num+'/',
                 dataType: 'html',
                 success: function(html) {
-                	if (html === ''){
-                		$('#post_list').append('End of posts');
+                	if (html.length < 5){ //response is empty
+                		$('#post_list').append('No more posts');
                 	}
                 	else{
                 		$('#post_list').append(html);
@@ -28,13 +26,13 @@ $(document).ready(function() {
             });
 		}
 		else if(URI[1] === 'tagged'){			
-				var request_url = '/tagged/'+URI[2]+'/page/'+page_num;
+				var request_url = '/tagged/'+URI[2]+'/page/'+page_num+'/';
 				$.ajax({
                 url: request_url,
                 dataType: 'html',
                 success: function(html) {
-                	if (html === ''){
-                		$('#post_list').append('End of posts');
+                	if (html.length < 5){ //response is empty
+                		$('#post_list').append('No more posts');
                 	}
                 	else{
                 		$('#post_list').append(html);
@@ -46,18 +44,14 @@ $(document).ready(function() {
 		  }
           else if(URI[1] === 'search'){           
                 var query = window.location.search.split('/')[0];
-                console.log(query)
                 query = query.match(/\?q=(.+)/)[1];
-                console.log(query)
-
-                var request_url = '/search/'+ query +'/page/'+page_num;
-                console.log(request_url)
+                var request_url = '/search/'+ query +'/page/'+page_num+'/';
                 $.ajax({
                 url: request_url,
                 dataType: 'html',
                 success: function(html) {
-                    if (html === ''){
-                        $('#post_list').append('End of posts');
+                    if (html.length < 5){ //response is empty
+                        $('#post_list').append('No more posts');
                     }
                     else{
                         $('#post_list').append(html);
@@ -68,13 +62,13 @@ $(document).ready(function() {
             });
           }
           else{
-                var request_url = '/author/'+URI[2]+'/page/'+page_num;
+                var request_url = '/author/'+URI[2]+'/page/'+page_num+'/';
                 $.ajax({
                 url: request_url,
                 dataType: 'html',
                 success: function(html) {
-                    if (html === ''){
-                        $('#post_list').append('End of posts');
+                    if (html.length < 5){ //response is empty
+                        $('#post_list').append('No more posts');
                     }
                     else{
                         $('#post_list').append(html);
@@ -87,3 +81,6 @@ $(document).ready(function() {
 	}}
 })
 })
+
+
+
