@@ -9,9 +9,9 @@ $(document).ready(function() {
 		if ($(document).height() - win.scrollTop() <= win.height()+400) {
 		page_num+=1
 		var URI = window.location.pathname.split( '/' )
-		if(URI[1] === 'page' || URI[1] === ''){
+		if(URI[2] === 'page' || URI[2] === ''){
 		$.ajax({
-                url: '/page/'+page_num+'/',
+                url: '/blog/page/'+page_num+'/',
                 dataType: 'html',
                 success: function(html) {
                 	if (html.length < 5){ //response is empty
@@ -25,8 +25,8 @@ $(document).ready(function() {
                 }
             });
 		}
-		else if(URI[1] === 'tagged'){			
-				var request_url = '/tagged/'+URI[2]+'/page/'+page_num+'/';
+		else if(URI[2] === 'tagged'){			
+				var request_url = '/blog/tagged/'+URI[3]+'/page/'+page_num+'/';
 				$.ajax({
                 url: request_url,
                 dataType: 'html',
@@ -42,10 +42,10 @@ $(document).ready(function() {
                 }
             });
 		  }
-          else if(URI[1] === 'search'){           
+          else if(URI[2] === 'search'){           
                 var query = window.location.search.split('/')[0];
                 query = query.match(/\?q=(.+)/)[1];
-                var request_url = '/search/'+ query +'/page/'+page_num+'/';
+                var request_url = '/blog/search/'+ query +'/page/'+page_num+'/';
                 $.ajax({
                 url: request_url,
                 dataType: 'html',
@@ -62,7 +62,7 @@ $(document).ready(function() {
             });
           }
           else{
-                var request_url = '/author/'+URI[2]+'/page/'+page_num+'/';
+                var request_url = '/blog/author/'+URI[3]+'/page/'+page_num+'/';
                 $.ajax({
                 url: request_url,
                 dataType: 'html',

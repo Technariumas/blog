@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="shortcut icon" href="/static/main/img/favicon.ico" type="/static/main/image/x-icon">
+<link rel="stylesheet" type="text/css" href="/static/main/technarium.css" />
+<!-- include jQuery -->
+<script src="/static/main/scripts/jquery-1.11.1.min.js"></script>
+<script type="text/javascript">
+    var language = location.search.substr(location.search.indexOf("=")+1);
+    if (language === ""){
+    language = "en"
+    }
+</script>
+
+
+<!-- include Cycle2 -->
+<!-- include one or more optional Cycle2 plugins -->
+<script src="/static/main/scripts/jquery.cycle2.min.js"></script>
+<script src="/static/main/scripts/jquery.cycle2.carousel.min.js"></script>
+<script src="/static/main/scripts/jquery.cycle2.center.min.js"></script>
+<title>Technarium</title>
+
+  <title>{{ flatpage.title }}</title>
+
+</head>
+<body>
+    {{ flatpage.content }}
+</body>
+</html>
