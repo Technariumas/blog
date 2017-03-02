@@ -16,6 +16,24 @@ from blog.forms import PostForm, CommentForm, DeletePost
 from blog.utils import write_file, get_query
 
 
+def redirector(request):
+	'''redirects old urls to new ones. /join.html/?language=lt >> /join/en/'''
+
+	if 'language' in request.GET:
+		lang = request.GET['language']
+	else:
+		lang = 'en'
+	url = request.get_full_path() # >> '/index.html'
+	url = re.split(r'\.', url)[0] # >> '/index'
+	if url =='/index': # main page doesn't follow /resource/language/ convention so we process it separately
+		if lang == 'en': 
+			return HttpResponseRedirect('/')
+		else:
+			return HttpResponseRedirect('/lt')
+	else:
+		url = url + '/' + lang 	
+		return HttpResponseRedirect(url)
+
 
 @login_required
 @csrf_exempt
@@ -140,7 +158,7 @@ def delete_post(request, pk,slug=None):
 		form = DeletePost(request.POST, instance=post)
 		if form.is_valid():
 			post.delete()
-			return HttpResponseRedirect('/')
+			return HttpResponseRedirect('/blog/')
 	else:
 		form = DeletePost(instance=post)
 		return render(request,'blog/delete_object.html', {'form':form, 'post':post})
@@ -178,8 +196,6 @@ def add_post(request):
 				obj.tags.add(tag)
 			obj.save()
 			return HttpResponseRedirect(reverse('single_post_view', kwargs={'pk':obj.pk, 'slug':obj.slug}))
-		else:
-			return render(request, 'blog/add_post.html', {'form':form})
 	else:
 		form = PostForm(initial={'timestamp':int(time.time()),
 								'date_time': time.strftime('%Y-%m-%d %H:%M:%S',time.localtime())})
@@ -201,7 +217,6 @@ def add_comment(request, pk, slug=None):
 
 def user_login(request):
 	if request.method == 'POST':
-
 		username = request.POST.get('username')
 		password = request.POST.get('password')
 		user = authenticate(username=username, password=password)

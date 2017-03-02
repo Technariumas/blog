@@ -23,6 +23,13 @@ from blog import views
 urlpatterns = [
     url(r'^blog/', include('blog.urls')),
     url(r'^admin/', admin.site.urls),
+    url(r'^main\.html', views.redirector),
+    url(r'^join\.html', views.redirector),
+    url(r'^projects\.html', views.redirector),
+    url(r'^friends\.html', views.redirector),
+    url(r'^support\.html', views.redirector),
+    url(r'^equipment\.html', views.redirector),
+    url(r'^index\.html', views.redirector),
     static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)[0],
     url(r'^', include('django.contrib.flatpages.urls')),
     #url(r'^join/en/$', 'django.contrib.flatpages.views.flatpage')

@@ -5,12 +5,6 @@
 <link rel="stylesheet" type="text/css" href="/static/main/technarium.css" />
 <!-- include jQuery -->
 <script src="/static/main/scripts/jquery-1.11.1.min.js"></script>
-<script type="text/javascript">
-    var language = location.search.substr(location.search.indexOf("=")+1);
-    if (language === ""){
-    language = "en"
-    }
-</script>
 
 
 <!-- include Cycle2 -->
@@ -24,6 +18,8 @@
 
 </head>
 <body>
+
     {{ flatpage.content }}
 </body>
 </html>
+
