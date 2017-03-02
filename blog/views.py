@@ -46,15 +46,17 @@ def upload_handler(request):
 def search(request, query_string=None, page_num=1):
 	page_num=int(page_num)
 	if query_string == None:
+		''' this is for the first page of the result where query is passed trough 
+		the request's payload instead of the url''' 
 		if ('q' in request.GET) and request.GET['q'].strip():
 			query_string = request.GET['q']  			
 			entry_query = get_query(query_string, ['title', 'body','tags__name'])     
-			found_entries = Post.objects.filter(entry_query).order_by('-date_time')[page_num*10-10:page_num*10]
+			found_entries = Post.objects.filter(entry_query).order_by('-date_time').distinct()[page_num*10-10:page_num*10]
 			context_dict = {'query_string': query_string, 'post_list': found_entries }
 	else:
 		query_string = urllib.parse.unquote_plus(query_string)
 		entry_query = get_query(query_string, ['title', 'body','tags__name'])     
-		found_entries = Post.objects.filter(entry_query).order_by('-date_time')[page_num*10-10:page_num*10]
+		found_entries = Post.objects.filter(entry_query).order_by('-date_time').distinct()[page_num*10-10:page_num*10]
 		context_dict = {'query_string': query_string, 'post_list': found_entries }
 
 
