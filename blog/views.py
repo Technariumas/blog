@@ -25,7 +25,7 @@ def redirector(request):
 		lang = 'en'
 	url = request.get_full_path() # >> '/index.html'
 	url = re.split(r'\.', url)[0] # >> '/index'
-	if url =='/index': # main page doesn't follow /resource/language/ convention so we process it separately
+	if url =='/main': # main page doesn't follow /resource/language/ convention so we process it separately
 		if lang == 'en': 
 			return HttpResponseRedirect('/')
 		else:
@@ -212,7 +212,7 @@ def add_comment(request, pk, slug=None):
 			obj=form.save(commit=False)
 			obj.post_id=pk
 			form.save()
-			return HttpResponseRedirect(reverse('single_post_view', kwargs={'pk':pk}))
+			return HttpResponseRedirect(reverse('single_post_view', kwargs={'pk':pk, 'slug':slug}))
 	else:
 		form = CommentForm(initial={'date_time': time.strftime('%Y-%m-%d %H:%M:%S',time.localtime())})
 	return render(request, 'blog/add_comment.html', {'form':form, 'post':post})
@@ -238,3 +238,4 @@ def user_login(request):
 def user_logout(request):
 	logout(request)
 	return redirect('/blog/')
+

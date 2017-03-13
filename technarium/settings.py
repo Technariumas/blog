@@ -24,7 +24,7 @@ SECRET_KEY = '!8#p+h+fjdpn)21im@vs-8%(30c=4@87we!(z=wx0g#*jsspua'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
+APPEND_SLASH = True
 ALLOWED_HOSTS = []
 
 DEFAULT_CHARSET ='utf-8'

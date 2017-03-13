@@ -31,10 +31,5 @@ urlpatterns = [
     url(r'^equipment\.html', views.redirector),
     url(r'^index\.html', views.redirector),
     static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)[0],
-    url(r'^', include('django.contrib.flatpages.urls')),
-    #url(r'^join/en/$', 'django.contrib.flatpages.views.flatpage')
+    url(r'', include('django.contrib.flatpages.urls')),
 ] 
-'''
-urlpatterns += [
-url(r'^join.html?language=en$', flatpagse.views.flatpage, {'url': '/join/en/'}, name = 'join_en')
-]'''
