@@ -226,7 +226,7 @@ def user_login(request):
 		if user:
 			if user.is_active:
 				login(request, user)
-				return redirect('/')
+				return redirect('/blog/')
 			else:
 				return HttpResponse('Account is disabled')
 		else:
@@ -237,4 +237,4 @@ def user_login(request):
 @login_required(login_url="/login/")
 def user_logout(request):
 	logout(request)
-	return redirect('/')
+	return redirect('/blog/')
